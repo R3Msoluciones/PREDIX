@@ -143,16 +143,13 @@ export default function TacticalMap({
     });
     mapRef.current = map;
 
-    // Base oscura de Esri (sin API key). CARTO empezó a exigir key y pinta una marca de agua.
-    const tiles = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
-      maxNativeZoom: 16,
-      maxZoom: 18,
-      attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, OpenStreetMap contributors',
+    // CARTO exige API key (pinta marca de agua) y Esri Dark Gray casi no trae calles ni
+    // nombres. OSM estándar con filtro CSS de inversión da mapa oscuro con todo el detalle.
+    const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map);
-    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
-      maxNativeZoom: 16,
-      maxZoom: 18,
-    }).addTo(map);
+    tiles.getContainer().style.filter = "invert(1) hue-rotate(200deg) brightness(0.95) contrast(0.95) saturate(0.6)";
     tiles.on("load", () => { setLoading(false); setOffline(false); });
     tiles.on("tileerror", () => { setLoading(false); setOffline(true); });
     // Salvaguarda: si en 6s no cargaron tiles, quita el skeleton igual.
