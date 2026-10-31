@@ -1,5 +1,5 @@
 // ============================================================
-// TACTICAL MAP — Mapa Leaflet + tiles CARTO dark (SIN API key).
+// TACTICAL MAP — Mapa Leaflet + base vectorial OpenFreeMap dark (SIN API key).
 // Reemplaza Google Maps en MapaTab/ZonasTab para que el mapa se vea
 // sin depender de VITE_FRONTEND_FORGE_API_KEY. Capas controladas por
 // props; marcadores/heat/círculos construidos desde los datos mock.
@@ -9,6 +9,13 @@ import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet.heat";
+import "maplibre-gl/dist/maplibre-gl.css";
+import maplibregl from "maplibre-gl";
+import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-csp-worker.js?url";
+import "@maplibre/maplibre-gl-leaflet";
+
+// Worker como archivo propio: el blob inline por defecto falla bajo Vite ("Worker failed to load").
+maplibregl.setWorkerUrl(maplibreWorkerUrl);
 import { cn } from "@/lib/utils";
 import { POLICE_ELEMENTS, type PoliceElement } from "@/data/policeData";
 
@@ -143,15 +150,14 @@ export default function TacticalMap({
     });
     mapRef.current = map;
 
-    // CARTO exige API key (pinta marca de agua) y Esri Dark Gray casi no trae calles ni
-    // nombres. OSM estándar con filtro CSS de inversión da mapa oscuro con todo el detalle.
-    const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    // Base vectorial oscura de OpenFreeMap (sin API key ni límite de peticiones).
+    // CARTO ahora exige key y pinta marca de agua en las peticiones sin ella.
+    const basemap = L.maplibreGL({
+      style: "https://tiles.openfreemap.org/styles/dark",
     }).addTo(map);
-    const tc = tiles.getContainer(); if (tc) tc.style.filter = "invert(1) hue-rotate(200deg) brightness(0.95) contrast(0.95) saturate(0.6)";
-    tiles.on("load", () => { setLoading(false); setOffline(false); });
-    tiles.on("tileerror", () => { setLoading(false); setOffline(true); });
+    const gl = basemap.getMaplibreMap();
+    gl.on("load", () => { setLoading(false); setOffline(false); });
+    gl.on("error", () => { setLoading(false); setOffline(true); });
     // Salvaguarda: si en 6s no cargaron tiles, quita el skeleton igual.
     const loadTimer = setTimeout(() => setLoading(false), 6000);
 
