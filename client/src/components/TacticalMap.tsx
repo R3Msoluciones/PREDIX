@@ -143,10 +143,15 @@ export default function TacticalMap({
     });
     mapRef.current = map;
 
-    const tiles = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-      subdomains: "abcd",
-      maxZoom: 20,
-      attribution: '&copy; OpenStreetMap &copy; CARTO',
+    // Base oscura de Esri (sin API key). CARTO empezó a exigir key y pinta una marca de agua.
+    const tiles = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+      maxNativeZoom: 16,
+      maxZoom: 18,
+      attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, OpenStreetMap contributors',
+    }).addTo(map);
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
+      maxNativeZoom: 16,
+      maxZoom: 18,
     }).addTo(map);
     tiles.on("load", () => { setLoading(false); setOffline(false); });
     tiles.on("tileerror", () => { setLoading(false); setOffline(true); });
