@@ -7,6 +7,6 @@ dist/
 .DS_Store
 Thumbs.db
 client/public/data/edomex-municipios.geojson
-data/
+/data/
 scripts/predict/.venv/
 __pycache__/
