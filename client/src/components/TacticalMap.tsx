@@ -149,7 +149,7 @@ export default function TacticalMap({
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map);
-    tiles.getContainer().style.filter = "invert(1) hue-rotate(200deg) brightness(0.95) contrast(0.95) saturate(0.6)";
+    const tc = tiles.getContainer(); if (tc) tc.style.filter = "invert(1) hue-rotate(200deg) brightness(0.95) contrast(0.95) saturate(0.6)";
     tiles.on("load", () => { setLoading(false); setOffline(false); });
     tiles.on("tileerror", () => { setLoading(false); setOffline(true); });
     // Salvaguarda: si en 6s no cargaron tiles, quita el skeleton igual.
