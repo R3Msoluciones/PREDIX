@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
+client/public/data/edomex-municipios.geojson
+data/
+scripts/predict/.venv/
+__pycache__/

@@ -1,0 +1,104 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1773789389387,
+      "tag": "0000_dry_zarda",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1773789499066,
+      "tag": "0001_damp_smasher",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1773950813067,
+      "tag": "0002_early_luminals",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1774029847362,
+      "tag": "0003_slim_wasp",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1776456538518,
+      "tag": "0004_lying_surge",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1781315458851,
+      "tag": "0005_simple_talos",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1782770666314,
+      "tag": "0006_purple_pride",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1782771422925,
+      "tag": "0007_absurd_war_machine",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1782782258542,
+      "tag": "0008_broad_thena",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1783832813726,
+      "tag": "0009_first_guardian",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1783920915588,
+      "tag": "0010_flimsy_vargas",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1784343830519,
+      "tag": "0011_strange_stature",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "5",
+      "when": 1784400058425,
+      "tag": "0012_easy_martin_li",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "5",
+      "when": 1784593725731,
+      "tag": "0013_superb_katie_power",
+      "breakpoints": true
+    }
+  ]
+}

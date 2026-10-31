@@ -1,0 +1,1 @@
+CREATE INDEX `idx_alerta_created` ON `alertas` (`created_at`);
