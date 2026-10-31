@@ -48,9 +48,10 @@ async function startServer() {
       ? {
           directives: {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            // Tiles del mapa táctico (TacticalMap.tsx) — CARTO dark basemap sin API key.
-            "img-src": ["'self'", "data:", "https://*.basemaps.cartocdn.com"],
-            "connect-src": ["'self'", "https://*.basemaps.cartocdn.com"],
+            // Mapa base del mapa táctico (TacticalMap.tsx) — OpenFreeMap (MapLibre GL, sin API key).
+            "img-src": ["'self'", "data:", "blob:", "https://tiles.openfreemap.org"],
+            "connect-src": ["'self'", "https://tiles.openfreemap.org"],
+            "worker-src": ["'self'", "blob:"],
           },
         }
       : false,
