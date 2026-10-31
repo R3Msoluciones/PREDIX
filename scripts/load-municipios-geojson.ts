@@ -46,11 +46,19 @@ interface InegiFeatureCollection {
 
 async function main() {
   console.log("[municipios-geojson] Consultando WFS de INEGI (Marco Geoestadístico)...");
-  const res = await fetch(WFS_URL);
-  if (!res.ok) {
-    throw new Error(`WFS de INEGI respondió ${res.status}`);
+  // Timeout + reintentos: un WFS lento no debe colgar el build de despliegue.
+  let data: InegiFeatureCollection | undefined;
+  for (let intento = 1; intento <= 3 && !data; intento++) {
+    try {
+      const res = await fetch(WFS_URL, { signal: AbortSignal.timeout(60_000) });
+      if (!res.ok) throw new Error(`WFS de INEGI respondió ${res.status}`);
+      data = (await res.json()) as InegiFeatureCollection;
+    } catch (err) {
+      console.warn(`[municipios-geojson] Intento ${intento}/3 falló:`, err);
+      if (intento === 3) throw err;
+    }
   }
-  const data = (await res.json()) as InegiFeatureCollection;
+  if (!data) throw new Error("No se obtuvo respuesta del WFS de INEGI");
 
   if (data.features.length !== 125) {
     throw new Error(`Se esperaban 125 municipios, llegaron ${data.features.length} — revisa el filtro cve_ent=15`);
