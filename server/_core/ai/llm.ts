@@ -269,6 +269,12 @@ const normalizeResponseFormat = ({
   };
 };
 
+// gemini-3.5-flash tiene un free tier de solo 20 solicitudes/día (verificado
+// en el error real de la API) — impráctico para uso interno. Las variantes
+// flash-lite traen cuota gratuita mucho más generosa. El segundo es respaldo.
+const LLM_MODELS = ["gemini-3.1-flash-lite", "gemini-2.5-flash-lite"];
+const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504]);
+
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   assertApiKey();
 
@@ -284,11 +290,6 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   } = params;
 
   const payload: Record<string, unknown> = {
-    // gemini-3.5-flash tiene un free tier de solo 20 solicitudes/día (verificado
-    // en el error real de la API, no en documentación de terceros) —
-    // impráctico para uso interno. flash-lite trae cuota gratuita mucho más
-    // generosa.
-    model: "gemini-3.1-flash-lite",
     messages: messages.map(normalizeMessage),
   };
 
@@ -317,21 +318,31 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.response_format = normalizedResponseFormat;
   }
 
-  const response = await fetch(resolveApiUrl(), {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${ENV.geminiApiKey}`,
-    },
-    body: JSON.stringify(payload),
-  });
+  // Google responde 503 "high demand" de forma intermitente: reintenta con
+  // espera corta y, si el modelo sigue saturado, cae al modelo de respaldo.
+  let lastError: Error | undefined;
+  for (const model of LLM_MODELS) {
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      const response = await fetch(resolveApiUrl(), {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${ENV.geminiApiKey}`,
+        },
+        body: JSON.stringify({ ...payload, model }),
+      });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `LLM invoke failed: ${response.status} ${response.statusText} – ${errorText}`
-    );
+      if (response.ok) {
+        return (await response.json()) as InvokeResult;
+      }
+
+      const errorText = await response.text();
+      lastError = new Error(
+        `LLM invoke failed: ${response.status} ${response.statusText} – ${errorText}`
+      );
+      if (!RETRYABLE_STATUS.has(response.status)) throw lastError;
+      if (attempt < 2) await new Promise((r) => setTimeout(r, 1500));
+    }
   }
-
-  return (await response.json()) as InvokeResult;
+  throw lastError ?? new Error("LLM invoke failed");
 }
